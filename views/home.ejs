@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Cloud API SaaS | Scale Your Business</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+
+<%- include('./partials/navbar') %>
+
+    <!-- <nav class="flex items-center justify-between px-6 py-4 bg-white shadow-sm sticky top-0 z-50">
+        <div class="text-2xl font-bold text-green-600 flex items-center gap-2">
+            <i class="fab fa-whatsapp"></i> WapiSaaS
+        </div>
+        <div class="hidden md:flex gap-8 font-medium">
+            <a href="#features" class="hover:text-green-600 transition">Features</a>
+            <a href="#pricing" class="hover:text-green-600 transition">Pricing</a>
+            <a href="#docs" class="hover:text-green-600 transition">API Docs</a>
+        </div>
+        <div class="flex gap-4">
+            <a href="/auth/login" class="px-5 py-2 text-green-600 font-semibold hover:bg-green-50 rounded-lg transition">Login</a>
+            <a href="/auth/register" class="px-5 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition shadow-lg shadow-green-200">Get Started</a>
+        </div>
+    </nav> -->
+
+    <header class="relative px-6 py-20 md:py-32 bg-gradient-to-br from-green-50 to-white overflow-hidden">
+        <div class="max-w-6xl mx-auto text-center relative z-10">
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-6">
+                Automate WhatsApp <br><span class="text-green-600 underline decoration-green-200">at Scale.</span>
+            </h1>
+            <p class="text-lg md:text-xl text-gray-600 mb-10 max-w-2xl mx-auto">
+                The ultimate SaaS platform for WhatsApp Cloud API. Send notifications, build chatbots, and manage customer support with production-grade reliability.
+            </p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <a href="/auth/register" class="px-8 py-4 bg-green-600 text-white text-lg font-bold rounded-xl hover:bg-green-700 transition-all transform hover:scale-105 shadow-xl">Start Free Trial</a>
+                <a href="#features" class="px-8 py-4 bg-white border border-gray-200 text-gray-700 text-lg font-bold rounded-xl hover:bg-gray-50 transition">Watch Demo</a>
+            </div>
+            <div class="mt-12 flex items-center justify-center gap-8 text-sm text-gray-400 font-medium">
+                <span><i class="fas fa-check-circle text-green-500 mr-2"></i>Official Meta API</span>
+                <span><i class="fas fa-check-circle text-green-500 mr-2"></i>No Setup Fee</span>
+                <span><i class="fas fa-check-circle text-green-500 mr-2"></i>99.9% Uptime</span>
+            </div>
+        </div>
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-green-100 rounded-full blur-3xl opacity-50"></div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-50 rounded-full blur-3xl opacity-50"></div>
+    </header>
+
+    <section id="features" class="py-24 px-6 bg-white">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Everything you need to scale</h2>
+                <p class="text-gray-500">Powerful tools designed for developers and business owners.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-10">
+                <div class="p-8 border border-gray-100 rounded-2xl hover:border-green-200 hover:bg-green-50/30 transition shadow-sm">
+                    <div class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-6 text-xl">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Bulk Messaging</h3>
+                    <p class="text-gray-600 leading-relaxed">Send thousands of personalized messages instantly with our high-throughput API gateway.</p>
+                </div>
+                <div class="p-8 border border-gray-100 rounded-2xl hover:border-green-200 hover:bg-green-50/30 transition shadow-sm">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6 text-xl">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">AI Chatbots</h3>
+                    <p class="text-gray-600 leading-relaxed">Integrate OpenAI or Gemini to handle customer queries 24/7 without human intervention.</p>
+                </div>
+                <div class="p-8 border border-gray-100 rounded-2xl hover:border-green-200 hover:bg-green-50/30 transition shadow-sm">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6 text-xl">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Real-time Analytics</h3>
+                    <p class="text-gray-600 leading-relaxed">Track delivery rates, read receipts, and response times with our detailed dashboard.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="py-24 px-6 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Simple, Token-Based Pricing</h2>
+                <p class="text-gray-500">Pay only for what you send. Scale as you grow.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-10 rounded-3xl border-2 border-green-500 relative shadow-xl">
+                    <span class="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-500 text-white px-4 py-1 rounded-full text-sm font-bold uppercase tracking-widest">Most Popular</span>
+                    <h3 class="text-2xl font-bold mb-2">Pro Plan</h3>
+                    <div class="text-4xl font-black mb-6">₹499<span class="text-lg text-gray-400 font-normal">/mo</span></div>
+                    <ul class="space-y-4 mb-10 text-gray-600">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> 5,000 Tokens Included</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Priority Support</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> All AI Models Enabled</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Webhook Integration</li>
+                    </ul>
+                    <a href="/payments/create-order" class="block text-center py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition">Get Started</a>
+                </div>
+                <div class="bg-white p-10 rounded-3xl border border-gray-100 shadow-sm">
+                    <h3 class="text-2xl font-bold mb-2">Enterprise</h3>
+                    <div class="text-4xl font-black mb-6">₹4,999<span class="text-lg text-gray-400 font-normal">/mo</span></div>
+                    <ul class="space-y-4 mb-10 text-gray-600">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> 50,000 Tokens Included</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> 24/7 Dedicated Support</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Custom Integration Assistance</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> SLA Guarantee</li>
+                    </ul>
+                    <a href="/auth/register" class="block text-center py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-black transition">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-white py-12 px-6 border-t border-gray-100 text-center">
+        <p class="text-gray-400 text-sm mb-4">© 2024 WapiSaaS. All rights reserved.</p>
+        <div class="flex justify-center gap-6 text-gray-500 text-sm font-medium">
+            <a href="/privacy" class="hover:text-green-600">Privacy</a>
+            <a href="/terms" class="hover:text-green-600">Terms</a>
+            <a href="/contact" class="hover:text-green-600">Support</a>
+        </div>
+    </footer>
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</body>
+</html>
