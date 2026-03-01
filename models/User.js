@@ -54,11 +54,22 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Hash password before saving
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function() {
     // Only hash if password exists and is modified (prevents error on Google login)
-    if (!this.password || !this.isModified('password')) return next();
+    if (!this.password || !this.isModified('password')) {
+        return;
+    }
+
     this.password = await bcrypt.hash(this.password, 12);
-    next();
 });
+
+// Compare plain text password with hashed password
+userSchema.methods.comparePassword = function(candidatePassword) {
+    if (!this.password) {
+        return false;
+    }
+
+    return bcrypt.compare(candidatePassword, this.password);
+};
 
 module.exports = mongoose.model('User', userSchema);
