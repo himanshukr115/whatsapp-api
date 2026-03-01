@@ -1,49 +1,32 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
+
 const router = express.Router();
 const authController = require('../controllers/authController');
 const authMiddleware = require('../middlewares/authMiddleware');
-router.use(express.urlencoded({ extended: true }));
-
-// Import the validators from the utils folder
-// Ensure the path correctly points to your utils directory
-// const { 
-//   registerValidator, 
-//   loginValidator, 
-//   handleValidationErrors 
-// } = require('../utils/validators'); 
-
-const { 
-  registerValidator, 
-  loginValidator, 
-  handleValidationErrors 
+const {
+  registerValidator,
+  loginValidator,
+  handleValidationErrors,
 } = require('../utils/validators');
 
-
-
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many auth requests. Try again later.' },
+});
 
 router.get('/auth/register', authController.getSignup);
 router.get('/auth/login', authController.getLogin);
+router.get('/auth/verify-email/:token', authController.verifyEmail);
 
-// Routes with validation middleware applied
-// router.post(
-//   '/register', 
-//   registerValidator, 
-//   handleValidationErrors, 
-//   authController.register
-// );
-
-router.post('/register', registerValidator, handleValidationErrors, authController.register);
-
-
-router.post(
-  '/login', 
-  ...loginValidator,
-  handleValidationErrors, 
-  authController.login
-);
+router.post('/register', authLimiter, registerValidator, handleValidationErrors, authController.register);
+router.post('/login', authLimiter, loginValidator, handleValidationErrors, authController.login);
+router.post('/auth/login', authLimiter, loginValidator, handleValidationErrors, authController.login);
 
 router.post('/logout', authController.logout);
-
 router.get('/me', authMiddleware, authController.me);
 
 module.exports = router;
