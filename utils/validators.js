@@ -1,37 +1,50 @@
 const { body, validationResult } = require('express-validator');
 
 const registerValidator = [
-  body('name').trim().notEmpty().withMessage('Name is required'),
-  body('email').isEmail().withMessage('Valid email is required'),
+  body('name')
+    .trim()
+    .isLength({ min: 2, max: 80 })
+    .withMessage('Name must be between 2 and 80 characters')
+    .escape(),
+  body('email')
+    .trim()
+    .isEmail()
+    .withMessage('Valid email is required')
+    .normalizeEmail(),
   body('password')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters'),
+    .isLength({ min: 8, max: 128 })
+    .withMessage('Password must be at least 8 characters'),
+  body('confirmPassword')
+    .optional()
+    .custom((value, { req }) => value === req.body.password)
+    .withMessage('Password and confirm password do not match'),
+  body('countryCode')
+    .optional()
+    .trim()
+    .matches(/^\+[1-9]\d{0,3}$/)
+    .withMessage('Invalid country code'),
+  body('mobileNumber')
+    .optional()
+    .trim()
+    .matches(/^\d{7,15}$/)
+    .withMessage('Invalid mobile number'),
 ];
 
 const loginValidator = [
-  body('email').isEmail().withMessage('Valid email is required'),
+  body('email').trim().isEmail().withMessage('Valid email is required').normalizeEmail(),
   body('password').notEmpty().withMessage('Password is required'),
 ];
 
-// Middleware to catch and return validation errors
 const handleValidationErrors = (req, res, next) => {
-  console.log("Next function check:", typeof next);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  next();
+  return next();
 };
 
-// module.exports = {
-//   registerValidator,
-//   loginValidator,
-//   handleValidationErrors
-// };
-
-// validators.js
 module.exports = {
   registerValidator,
   loginValidator,
-  handleValidationErrors
+  handleValidationErrors,
 };
