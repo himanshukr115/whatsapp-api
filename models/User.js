@@ -34,6 +34,10 @@ const userSchema = new mongoose.Schema({
 
 // Hash password before saving
 userSchema.pre('save', async function() {
+// <<<<<<< codex/fix-register-route-next-is-not-a-function-error-85azh6
+// =======
+//     // Only hash if password exists and is modified (prevents error on Google login)
+// >>>>>>> main
     if (!this.password || !this.isModified('password')) {
         return;
     }
