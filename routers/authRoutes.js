@@ -32,15 +32,22 @@ router.get('/auth/login', authController.getLogin);
 //   authController.register
 // );
 
-router.post('/register', registerValidator, handleValidationErrors, authController.register);
+// router.post('/register', registerValidator, handleValidationErrors, authController.register);
 
-
+router.post('/register', ...registerValidator, handleValidationErrors, authController.register);
 router.post(
   '/login', 
   ...loginValidator,
   handleValidationErrors, 
   authController.login
 );
+
+
+// GET the verification page view
+router.get('/auth/verify-email/:token', authController.getVerifyEmailPage);
+
+// API endpoint the page calls to perform the logic
+router.get('/auth/verify-email-api/:token', authController.verifyEmail);
 
 router.post('/logout', authController.logout);
 

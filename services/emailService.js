@@ -1,4 +1,5 @@
 // Email Service - Postmark/Nodemailer for invoices and verification
+
 const nodemailer = require('nodemailer');
 
 class EmailService {
@@ -22,14 +23,51 @@ class EmailService {
         to: userEmail,
         subject: 'Verify Your Account - WhatsApp SaaS',
         html: `
-                <div style="font-family: Arial, sans-serif; padding: 20px;">
-                    <h1>Hello ${userName},</h1>
-                    <p>Thank you for signing up! Please verify your email address to activate your account.</p>
-                    <a href="${verificationUrl}" style="background: #25D366; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
-                        Verify Email Address
-                    </a>
-                    <p>If the button doesn't work, copy and paste this link: ${verificationUrl}</p>
-                </div>
+                <!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; }
+        .email-container { max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .header { background-color: #075E54; padding: 30px; text-align: center; color: #ffffff; }
+        .content { padding: 40px 30px; line-height: 1.6; color: #333333; }
+        .user-name { color: #075E54; font-weight: bold; }
+        .button-container { text-align: center; margin: 35px 0; }
+        .verify-button { background-color: #25D366; color: #ffffff !important; padding: 14px 30px; text-decoration: none; border-radius: 50px; font-weight: bold; font-size: 16px; display: inline-block; transition: background-color 0.3s ease; }
+        .footer { background-color: #f9f9f9; padding: 20px; text-align: center; font-size: 12px; color: #888888; border-top: 1px solid #eeeeee; }
+        .link-text { word-break: break-all; color: #34b7f1; font-size: 13px; }
+        .company-name { color: #075E54; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h2 style="margin:0;">Confirm Your Account</h2>
+        </div>
+
+        <div class="content">
+            <p>Hello <span class="user-name">${userName}</span>,</p>
+            <p>Welcome to our platform! We are excited to have you. To start using your AI-powered tools and managing your WhatsApp automation, please confirm your email address.</p>
+            
+            <div class="button-container">
+                <a href="${verificationUrl}" class="verify-button">
+                    Verify Email Address
+                </a>
+            </div>
+
+            <p style="margin-bottom: 5px;"><strong>If the button doesn't work,</strong> please copy and paste this link into your browser:</p>
+            <p class="link-text">${verificationUrl}</p>
+        </div>
+
+        <div class="footer">
+            <p>If you did not sign up for an account, you can safely ignore this email.</p>
+            <p>&copy; ${new Date().getFullYear()} <span class="company-name">WhatsApp SaaS</span>. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
             `
       };
       await this.transporter.sendMail(mailOptions);

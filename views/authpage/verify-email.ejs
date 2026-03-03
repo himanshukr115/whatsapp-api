@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email - WhatsApp SaaS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f8f9fa; display: flex; align-items: center; min-height: 100vh; }
+        .verification-card { max-width: 450px; width: 100%; margin: auto; border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .icon-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .bg-pending { background-color: #e9ecef; color: #6c757d; }
+        .bg-success-light { background-color: #d1e7dd; color: #0f5132; }
+        .bg-danger-light { background-color: #f8d7da; color: #842029; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card verification-card p-4 text-center">
+        <div class="card-body">
+            <div id="status-container">
+                <div class="icon-circle bg-pending mb-4">
+                    <div class="spinner-border text-primary" role="status"></div>
+                </div>
+                <h3 class="card-title h4">Verifying your email...</h3>
+                <p class="text-muted">Please wait while we confirm your account details.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Extract token from URL path: /auth/verify-email/:token
+    const pathParts = window.location.pathname.split('/');
+    const token = pathParts[pathParts.length - 1];
+
+    async function verifyEmail() {
+        try {
+            const response = await fetch(`/auth/verify-email-api/${token}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const data = await response.json();
+            const container = document.getElementById('status-container');
+
+            if (response.ok) {
+                container.innerHTML = `
+                    <div class="icon-circle bg-success-light mb-4">
+                        <i class="bi bi-check-lg fs-1"></i>
+                    </div>
+                    <h3 class="card-title h4 text-success">Email Verified!</h3>
+                    <p class="text-muted mb-4">${data.message || 'Your account is now active.'}</p>
+                    <a href="/auth/login" class="btn btn-primary w-100 py-2">Go to Login</a>
+                `;
+            } else {
+                throw new Error(data.error || 'Verification failed');
+            }
+        } catch (err) {
+            document.getElementById('status-container').innerHTML = `
+                <div class="icon-circle bg-danger-light mb-4">
+                    <i class="bi bi-x-lg fs-1"></i>
+                </div>
+                <h3 class="card-title h4 text-danger">Invalid Token</h3>
+                <p class="text-muted mb-4">${err.message}</p>
+                <a href="/auth/register" class="btn btn-outline-secondary w-100 py-2">Back to Signup</a>
+            `;
+        }
+    }
+
+    // Run verification on page load
+    if (token) {
+        verifyEmail();
+    }
+</script>
+
+</body>
+</html>
