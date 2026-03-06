@@ -18,6 +18,7 @@ exports.getDashboard = async (req, res) => {
             title: 'Business Overview',
             user: req.user,
             // Merge fresh business data with stats
+            metaAppId: process.env.META_APP_ID || '',
             stats: {
                 totalOperators,
                 totalViewers,

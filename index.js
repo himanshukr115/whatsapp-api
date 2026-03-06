@@ -34,7 +34,9 @@ app.use(
           "'unsafe-eval'",
           "https://unpkg.com",
           "https://cdn.jsdelivr.net", // Allows Bootstrap & other JS from jsDelivr
-          "https://cdn.tailwindcss.com"
+          "https://cdn.tailwindcss.com",
+          "https://connect.facebook.net",
+          "https://www.facebook.com"
         ],
 
         styleSrc: [
@@ -52,7 +54,9 @@ app.use(
 
         imgSrc: ["'self'", "data:", "https://www.svgrepo.com"],
 
-        connectSrc: ["'self'", "https://accounts.google.com"],
+        frameSrc: ["'self'", "https://www.facebook.com"],
+
+        connectSrc: ["'self'", "https://accounts.google.com", "https://graph.facebook.com"],
       },
     },
   })

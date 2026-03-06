@@ -143,7 +143,7 @@
                             </div>
                             <h6>Embedded Signup</h6>
                             <p class="text-muted small">Connect in seconds using your Facebook Login. No technical setup required.</p>
-                            <button onclick="launchWhatsAppSignup()" class="btn btn-whatsapp w-100">
+                            <button onclick="launchWhatsAppSignup(this)" class="btn btn-whatsapp w-100">
                                 Launch Signup Flow
                             </button>
                         </div>
@@ -195,7 +195,7 @@
      */
     window.fbAsyncInit = function() {
         FB.init({
-            appId      : 'YOUR_META_APP_ID', // Replace with your actual Meta App ID
+            appId      : '<%= metaAppId %>',
             cookie     : true,
             xfbml      : true,
             version    : 'v18.0' // Latest stable Graph API version
@@ -215,13 +215,18 @@
      * 2. EMBEDDED SIGNUP HANDLER (METHOD A)
      * Triggers the Meta Popup to link a WhatsApp Business Account
      */
-    function launchWhatsAppSignup() {
+    function launchWhatsAppSignup(buttonEl) {
+        if (!'<%= metaAppId %>') {
+            alert('META_APP_ID is missing on server. Ask admin to set it in .env');
+            return;
+        }
+
         FB.login(function(response) {
             if (response.authResponse) {
                 const accessToken = response.authResponse.accessToken;
                 
                 // Show loading state
-                const btn = event.target;
+                const btn = buttonEl;
                 const originalText = btn.innerHTML;
                 btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Connecting...';
                 btn.disabled = true;
