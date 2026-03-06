@@ -94,13 +94,28 @@ exports.login = async (req, res) => {
 
         const user = await User.findOne({ email: normalizedEmail });
 
+        // 1. Invalid credentials
         if (!user || !(await user.comparePassword(password))) {
-            return res.status(401).json({ error: 'Invalid email or password' });
+            return res.status(401).render('auth/login', {
+                error: 'Invalid email or password'
+            });
         }
 
-        if (!user.isActive) return res.status(403).json({ error: 'Verify your email first' });
+        // 2. Check if account is verified
+        if (!user.isActive) {
+            return res.status(403).render('auth/login', {
+                error: 'Please verify your email address first.'
+            });
+        }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        // 3. Generate JWT
+        const token = jwt.sign(
+            { id: user._id, role: user.role, businessId: user.businessId },
+            process.env.JWT_SECRET,
+            { expiresIn: '7d' }
+        );
+
+        // 4. Set Secure Cookie
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -108,13 +123,12 @@ exports.login = async (req, res) => {
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
-        return res.json({
-            token,
-            user: { id: user._id, name: user.name, email: user.email },
-        });
+        // 5. Redirect to dashboard instead of sending JSON
+        return res.redirect('/tenant/dashboard');
+
     } catch (error) {
         console.error('Login error:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).render('error/500');
     }
 };
 

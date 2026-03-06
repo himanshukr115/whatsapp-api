@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const tokenUsageSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     businessId: { type: mongoose.Schema.Types.ObjectId, ref: 'Business' },

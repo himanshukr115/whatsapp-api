@@ -1,0 +1,56 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top shadow-sm">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand d-flex align-items-center" href="/tenant/dashboard">
+            <i class="bi bi-whatsapp text-success fs-3 me-2"></i>
+            <span class="fw-bold text-dark">WhatsApp <span class="text-success">SaaS</span></span>
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#tenantNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="tenantNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                <li class="nav-item">
+                    <a class="nav-link fw-medium" href="/tenant/dashboard">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-medium" href="/tenant/team">Team</a>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center">
+                <div class="d-none d-md-flex align-items-center bg-light rounded-pill px-3 py-1 me-3 border">
+                    <i class="bi bi-coin text-warning me-2"></i>
+                    <span class="small fw-bold text-secondary">
+                        <%= user.tokenBalance %> Tokens
+                    </span>
+                </div>
+
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown">
+                        <div class="avatar-circle bg-success text-white d-flex align-items-center justify-content-center rounded-circle me-2" style="width: 35px; height: 35px; font-size: 0.8rem;">
+                            <%= user.name.charAt(0).toUpperCase() %>
+                        </div>
+                        <div class="d-none d-lg-block">
+                            <p class="mb-0 small fw-bold text-dark"><%= user.name %></p>
+                            <p class="mb-0 smaller text-muted" style="font-size: 0.7rem;"><%= user.role.replace('_', ' ').toUpperCase() %></p>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                        <li><a class="dropdown-item py-2" href="/tenant/profile"><i class="bi bi-person me-2"></i> My Profile</a></li>
+                        <li><a class="dropdown-item py-2" href="/tenant/settings"><i class="bi bi-gear me-2"></i> Settings</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form action="/logout" method="POST">
+                                <button type="submit" class="dropdown-item py-2 text-danger">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Sign Out
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
