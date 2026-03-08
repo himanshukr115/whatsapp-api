@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const dashboardController = require('../controllers/tenant/dashboardController');
 const authMiddleware = require('../middlewares/authMiddleware');
+const whatsappController = require('../controllers/tenant/whatsappController');
 
 // Role-based access control middleware
 const isTenantAdmin = (req, res, next) => {
@@ -16,5 +17,8 @@ router.use(authMiddleware, isTenantAdmin);
 
 router.get('/dashboard', dashboardController.getDashboard);
 router.get('/settings', dashboardController.getSettings);
+router.post('/whatsapp/connect-manual', whatsappController.connectWhatsapp);
+router.post('/whatsapp/callback', whatsappController.connectEmbeddedSignup);
+
 
 module.exports = router;
