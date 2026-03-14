@@ -47,9 +47,9 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
                 <h1 class="h3 fw-bold">Business Overview</h1>
                 <div class="d-flex gap-2">
-                    <span class="connection-status <%= user.whatsappConfig && user.whatsappConfig.isApiConnected ? 'status-connected' : 'status-disconnected' %>">
+                    <span class="connection-status <%= stats.isApiConnected ? 'status-connected' : 'status-disconnected' %>">
                         <i class="bi bi-circle-fill me-1 small"></i> 
-                        <%= user.whatsappConfig && user.whatsappConfig.isApiConnected ? 'WhatsApp Connected' : 'WhatsApp Disconnected' %>
+                        <%= stats.isApiConnected ? 'WhatsApp Connected' : 'WhatsApp Disconnected' %>
                     </span>
                 </div>
             </div>
@@ -163,7 +163,7 @@
                 </div>
 
                 <div class="collapse mt-4" id="manualConfigForm">
-                    <form action="/tenant/whatsapp/connect-manual" method="POST" class="bg-light p-4 rounded-4">
+                    <form id="manualConfigConnectForm" action="/tenant/whatsapp/connect-manual" method="POST" class="bg-light p-4 rounded-4">
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-muted">Phone Number ID</label>
                             <input type="text" name="phoneNumberId" class="form-control" placeholder="e.g., 108394239..." required>
@@ -268,8 +268,7 @@
      * 3. MANUAL CONFIGURATION HANDLER (METHOD B - BYOK)
      * Handles manual key entry for advanced tenants
      */
-    document.getElementById('manualConfigForm')?.addEventListener('submit', async function(e) {
-        if(e.target.tagName !== 'FORM') return;
+    document.getElementById('manualConfigConnectForm')?.addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const formData = new FormData(this);
