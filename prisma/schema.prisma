@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Workspace {
+  id              String   @id @default(cuid())
+  name            String
+  plan            String   @default("free")
+  stripeCustomerId String?
+  createdAt       DateTime @default(now())
+  
+  users       User[]
+  channels    Channel[]
+  contacts    Contact[]
+  flows       Flow[]
+  campaigns   Campaign[]
+  auditLogs   AuditLog[]
+}
+
+model User {
+  id          String   @id @default(cuid())
+  workspaceId String
+  email       String   @unique
+  passwordHash String
+  role        String   @default("agent") // owner | admin | agent
+  createdAt   DateTime @default(now())
+  
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model Channel {
+  id                 String   @id @default(cuid())
+  workspaceId        String
+  type               String   // whatsapp | instagram
+  phoneNumberId      String?  // WA only
+  igAccountId        String?  // IG only
+  igPageId           String?  // IG only
+  accessTokenEnc     String   // AES-256 encrypted
+  webhookVerifyToken String
+  status             String   @default("active")
+  createdAt          DateTime @default(now())
+  
+  workspace     Workspace      @relation(fields: [workspaceId], references: [id])
+  conversations Conversation[]
+  campaigns     Campaign[]
+}
+
+model Contact {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  channelType   String
+  externalId    String   // phone for WA, PSID for IG
+  name          String?
+  phone         String?
+  igUsername    String?
+  tags          String[]
+  customFields  Json     @default("{}")
+  optedIn       Boolean  @default(true)
+  optedInAt     DateTime?
+  assignedToId  String?
+  createdAt     DateTime @default(now())
+  
+  workspace     Workspace      @relation(fields: [workspaceId], references: [id])
+  conversations Conversation[]
+  
+  @@unique([workspaceId, channelType, externalId])
+}
+
+model Conversation {
+  id            String   @id @default(cuid())
+  workspaceId   String
+  contactId     String
+  channelId     String
+  status        String   @default("open") // open | resolved | bot | human
+  botPaused     Boolean  @default(false)
+  assignedToId  String?
+  lastMessageAt DateTime?
+  createdAt     DateTime @default(now())
+  
+  contact  Contact   @relation(fields: [contactId], references: [id])
+  channel  Channel   @relation(fields: [channelId], references: [id])
+  messages Message[]
+}
+
+model Message {
+  id              String   @id @default(cuid())
+  conversationId  String
+  workspaceId     String
+  direction       String   // inbound | outbound
+  content         Json
+  messageType     String   // text | image | video | audio | template | interactive
+  metaMessageId   String?  @unique
+  idempotencyKey  String?  @unique
+  status          String   @default("sent") // sent | delivered | read | failed
+  createdAt       DateTime @default(now())
+  
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+}
+
+model Flow {
+  id          String   @id @default(cuid())
+  workspaceId String
+  channelType String   // whatsapp | instagram | both
+  name        String
+  triggerType String   // keyword | story_mention | comment | welcome | any_message
+  triggerConfig Json
+  nodes       Json
+  edges       Json
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model Campaign {
+  id             String   @id @default(cuid())
+  workspaceId    String
+  channelId      String
+  name           String
+  templateName   String?
+  templateParams Json?
+  messageContent Json?
+  audienceFilter Json?
+  status         String   @default("draft") // draft | scheduled | running | completed | failed
+  scheduledAt    DateTime?
+  sentCount      Int      @default(0)
+  failedCount    Int      @default(0)
+  createdAt      DateTime @default(now())
+  
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  channel   Channel   @relation(fields: [channelId], references: [id])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String?
+  action      String
+  entityType  String
+  entityId    String?
+  before      Json?
+  after       Json?
+  createdAt   DateTime @default(now())
+  
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+}

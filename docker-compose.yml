@@ -1,0 +1,150 @@
+version: '3.9'
+
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    env_file: .env
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+
+  webhook-ingress:
+    build: .
+    command: node dist/webhook-server.js
+    ports:
+      - "3001:3001"
+    env_file: .env
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  worker:
+    build: .
+    command: node dist/worker.js
+    env_file: .env
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: saas_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redisdata:/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  redisdata:
+```
+
+---
+
+# SECTION 6 — PRODUCTION HARDENING FOR 1M USERS
+
+## Architecture for Scale
+```
+                        ┌──────────────────────────┐
+                        │     CloudFront CDN        │
+                        │  (static assets, media)   │
+                        └────────────┬─────────────┘
+                                     │
+                        ┌────────────▼─────────────┐
+                        │   AWS ALB / Nginx Proxy   │
+                        │   (TLS termination, WAF)  │
+                        └──┬──────────┬─────────────┘
+                           │          │
+              ┌────────────▼──┐   ┌───▼──────────────┐
+              │  App Servers  │   │  Webhook Ingress  │
+              │  NestJS/Node  │   │  (dedicated tier) │
+              │  ASG: 2–50    │   │  ASG: 2–20        │
+              │  instances    │   │  instances        │
+              └─────┬─────────┘   └───────┬───────────┘
+                    │                     │
+              ┌─────▼─────────────────────▼──┐
+              │       BullMQ / SQS           │
+              │  Redis Cluster (ElastiCache) │
+              └──────────────┬───────────────┘
+                             │
+              ┌──────────────▼───────────────┐
+              │       Worker Pool            │
+              │  wa-worker: ASG 5–30         │
+              │  ig-worker: ASG 5–30         │
+              │  campaign-worker: ASG 2–10   │
+              └──────────────┬───────────────┘
+                             │
+              ┌──────────────▼───────────────┐
+              │     PostgreSQL (RDS)          │
+              │  Primary + 2 Read Replicas   │
+              │  + PgBouncer connection pool │
+              │  + Row-level tenant isolation│
+              └──────────────────────────────┘
+```
+
+## What Must Change Before Production (P0)
+
+| Item | Why Critical |
+|---|---|
+| Webhook HMAC verification | Without this, anyone can inject fake events |
+| Idempotency on webhook ingestion | Meta retries — duplicate processing = duplicate messages |
+| Async queue for all message processing | Synchronous processing will miss Meta's 20s response window |
+| Encrypt stored access tokens (AES-256-GCM) | Raw tokens in DB = full account compromise if DB leaks |
+| JWT secret rotation mechanism | Single static secret = permanent compromise if leaked |
+| Rate limiting per tenant | One bad actor can exhaust your Meta API quota |
+| Database connection pooling (PgBouncer) | Default Prisma pool will exhaust Postgres connections at scale |
+| Structured logging (Pino/Winston + JSON) | Required for any log aggregation (CloudWatch, Datadog, Loki) |
+| Health check endpoints (`/health`, `/ready`) | Required for load balancers and Kubernetes readiness probes |
+| Proper CORS configuration | Currently likely `*` — must be scoped to known origins |
+
+## What Can Wait Until v2
+
+- Kafka migration (BullMQ/Redis scales to ~100K msg/min — fine for v1)
+- Read replicas (add when primary CPU > 70% sustained)
+- Canary deployments (blue/green with ALB target groups is sufficient at first)
+- Full distributed tracing (OpenTelemetry) — structured logs are good enough for MVP
+- Kafka-based outbox pattern (implement when duplicate-send rate > 0.1%)
+- Multi-region active/passive failover
+
+## Rate Limiting Strategy
+```
+Meta WA Cloud API limits:
+  - 1,000 messages/second per phone number (Tier 1)
+  - Up to 100,000/day on Tier 2 (requires approval)
+  
+Meta IG Messaging limits:
+  - 1,000 unique users/day (standard) 
+  - Higher limits via Meta approval
+  
+Your internal limits:
+  - Per workspace per channel: sliding window in Redis
+  - Campaign sends: token bucket, max 80% of Meta limit
+```
+
+## Observability Stack
+```
+Metrics: Prometheus + Grafana (self-hosted) or Datadog
+Logs: Pino (JSON) → CloudWatch/Loki/Datadog
+Traces: OpenTelemetry → Jaeger or Datadog APM
+Alerts: PagerDuty or Grafana Alerting
+  - Webhook DLQ depth > 100 → page on-call
+  - Campaign failure rate > 5% → alert
+  - DB query p99 > 500ms → alert
+  - Worker queue depth > 10K → scale out trigger

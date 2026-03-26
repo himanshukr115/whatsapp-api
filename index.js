@@ -100,6 +100,9 @@ app.get('/', (req, res) => {
 app.use('/', authRouter);
 const tenantRouter = require('./routers/tenantRoutes');
 app.use('/tenant', tenantRouter);
+// NEW: Instagram routes (add below your existing routes)
+const instagramRoutes = require('./src/routes/instagram.routes.ts');
+app.use('/api', instagramRoutes);
 
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
