@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { prisma } from '../lib/prisma';
-import { messageQueue } from '../queues/queues';
+import { messageQueue } from '../queues/queues.ts';
 
 const GRAPH_API = 'https://graph.facebook.com/v19.0';
 

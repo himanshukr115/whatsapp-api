@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
-import { messageQueue } from '../queues/queues';
+import { messageQueue } from '../queues/queues.ts';
 import { prisma } from '../lib/prisma';
 
 // CRITICAL: Verify Meta's HMAC-SHA256 signature on every webhook POST

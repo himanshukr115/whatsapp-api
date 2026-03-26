@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import crypto from 'crypto';
-import { messageQueue } from '../queues/queues';
+import { messageQueue } from '../queues/queues.ts';
 import { prisma } from '../lib/prisma';
 
 export function verifyInstagramSignature(req: Request, res: Response, next: Function) {
